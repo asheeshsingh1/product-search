@@ -1,4 +1,4 @@
-@startuml
+@startuml ProductSearchAPI
 title Product Search API Architecture
 
 actor User
