@@ -1,0 +1,34 @@
+@startuml
+title Product Search API Architecture
+
+actor User
+
+node "Express API (TypeScript)" {
+    component SearchController
+    component RedisClient
+    component ElasticsearchClient
+}
+
+database "Redis" as Redis
+database "Elasticsearch" as ES
+component "RedisInsight" as RI
+component "Kibana" as Kibana
+
+User --> SearchController : HTTP Request\n(GET /search?q=shoes)
+
+SearchController --> RedisClient : Check cache
+RedisClient --> Redis : GET query
+Redis --> RedisClient : Cache result
+RedisClient --> SearchController : Return (cache hit)
+
+SearchController --> ElasticsearchClient : Cache miss → search
+ElasticsearchClient --> ES : Full-text search
+ES --> ElasticsearchClient : Search results
+
+RedisClient --> Redis : SET cache
+SearchController --> User : JSON response
+
+RI --> Redis : Visual Redis browser
+Kibana --> ES : Explore, Visualize data
+
+@enduml
